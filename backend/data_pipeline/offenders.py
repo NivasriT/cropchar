@@ -1,13 +1,14 @@
 import json
-import os
+from pathlib import Path
 
-LOG_PATH = "data/offender_log.json"
+BASE_DIR = Path(__file__).resolve().parents[2]
+LOG_PATH = BASE_DIR / "data" / "offender_log.json"
 
 
 def update_offender_log(flagged_gdf):
     log = {}
 
-    if os.path.exists(LOG_PATH):
+    if LOG_PATH.exists():
         with open(LOG_PATH) as f:
             log = json.load(f)
 

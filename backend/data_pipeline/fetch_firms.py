@@ -1,10 +1,8 @@
-import os
 import requests
 import pandas as pd
-from dotenv import load_dotenv
+from backend.core.config import settings
 
-load_dotenv()
-MAP_KEY = os.getenv("FIRMS_MAP_KEY")
+MAP_KEY = settings.FIRMS_MAP_KEY
 AREA = "77.745493,11.339389,77.752928,11.343442"
 SOURCE = "VIIRS_SNPP_NRT"
 DAYS = 3
@@ -22,5 +20,4 @@ def fetch_hotspots():
     return df
 
 if __name__ == "__main__":
-    df = fetch_hotspots()
-    print(df.head())
+    print(fetch_hotspots().head())

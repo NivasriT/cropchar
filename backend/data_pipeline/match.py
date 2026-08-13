@@ -1,8 +1,11 @@
 import geopandas as gpd
 import pandas as pd
+from pathlib import Path
 from shapely.geometry import Point
-from rules import is_unauthorized
-from fetch_firms import fetch_hotspots
+from backend.data_pipeline.rules import is_unauthorized
+from backend.data_pipeline.fetch_firms import fetch_hotspots
+
+BASE_DIR = Path(__file__).resolve().parents[2]
 
 def hotspots_to_geodf(hotspots_df):
     geometry = [Point(xy) for xy in zip(hotspots_df.longitude, hotspots_df.latitude)]
@@ -20,8 +23,15 @@ def flag_unauthorized(matched_gdf, permits_df):
 
 def run_pipeline():
     hotspots = fetch_hotspots()
-    fields = gpd.read_file("data/sample_boundaries.geojson")
-    permits = pd.read_csv("data/permits_mock.csv")
+    fields = gpd.read_file(BASE_DIR / "data" / "sample_boundaries.geojson")
+    permits = pd.read_csv(BASE_DIR / "data" / "permits_mock.csv")
+    hotspots_gdf = hotspots_to_geodf(hotspots)
+    matched = match_to_fields(hotspots_gdf, fields)
+    return flag_unauthorized(matched, permits)
+def run_pipeline_demo():
+    hotspots = pd.read_csv(BASE_DIR / "data" / "sample_hotspots.csv")
+    fields = gpd.read_file(BASE_DIR / "data" / "sample_boundaries.geojson")
+    permits = pd.read_csv(BASE_DIR / "data" / "permits_mock.csv")
     hotspots_gdf = hotspots_to_geodf(hotspots)
     matched = match_to_fields(hotspots_gdf, fields)
     return flag_unauthorized(matched, permits)
